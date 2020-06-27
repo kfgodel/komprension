@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="false">
+
+  <!-- Standard console output -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>\(%12r\) [%-20t] %-5p %-80m | at %C\(%F:%L\) [%-23d{ISO8601}]%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="info.kfgodel.komprension" level="DEBUG"/>
+
+  <root level="info">
+    <appender-ref ref="STDOUT"/>
+  </root>
+
+</configuration>
