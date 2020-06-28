@@ -6,6 +6,7 @@ import info.kfgodel.komprension.ext.collectToByteArray
 import info.kfgodel.komprension.impl.EMPTY_ARRAY_FUNCTION
 import info.kfgodel.komprension.impl.Komprenser
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.runner.RunWith
 
@@ -25,8 +26,10 @@ class CompressionBasicCasesTest : KotlinSpec() {
         assertThat(output.collectToByteArray()).containsExactly(EMPTY_ARRAY_FUNCTION)
       }
 
-      xit("uses the empty array function type when a flow with no bytes is passed") {
-
+      it("uses the empty array function type when a flow with no bytes is passed") {
+        val input = flowOf(ByteArray(0))
+        val output = compressor().invoke(input);
+        assertThat(output.collectToByteArray()).containsExactly(EMPTY_ARRAY_FUNCTION)
       }
 
     }

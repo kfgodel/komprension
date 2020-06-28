@@ -19,5 +19,3 @@ fun Flow<ByteArray>.collectToByteArray() = runBlocking {
     buffer.plus(chunk)
   }
 }
-
-fun flowOfByteArraysWith(vararg bytes: Byte): Flow<ByteArray> = kotlinx.coroutines.flow.flowOf(bytes)
