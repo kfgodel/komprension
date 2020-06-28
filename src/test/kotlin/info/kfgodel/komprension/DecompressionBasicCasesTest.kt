@@ -2,8 +2,8 @@ package info.kfgodel.komprension
 
 import info.kfgodel.jspek.api.JavaSpecRunner
 import info.kfgodel.jspek.api.KotlinSpec
-import info.kfgodel.komprension.ext.byteArrayFlowOf
 import info.kfgodel.komprension.ext.collectToByteArray
+import info.kfgodel.komprension.ext.flowOfByteArraysWith
 import info.kfgodel.komprension.impl.EMPTY_ARRAY_FUNCTION
 import info.kfgodel.komprension.impl.Komprenser
 import org.assertj.core.api.Assertions.assertThat
@@ -20,7 +20,7 @@ class DecompressionBasicCasesTest : KotlinSpec() {
       val decompressor by let { Komprenser().decompressor() }
 
       it("returns en empty flow when the empty array function is passed") {
-        val input = byteArrayFlowOf(EMPTY_ARRAY_FUNCTION)
+        val input = flowOfByteArraysWith(EMPTY_ARRAY_FUNCTION)
         val output = decompressor().invoke(input);
         assertThat(output.collectToByteArray()).isEmpty()
       }
