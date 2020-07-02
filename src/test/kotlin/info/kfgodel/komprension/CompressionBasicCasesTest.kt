@@ -3,8 +3,9 @@ package info.kfgodel.komprension
 import info.kfgodel.jspek.api.JavaSpecRunner
 import info.kfgodel.jspek.api.KotlinSpec
 import info.kfgodel.komprension.ext.collectToByteArray
-import info.kfgodel.komprension.impl.EMPTY_ARRAY_FUNCTION
+import info.kfgodel.komprension.impl.EMPTY_FUNCTION
 import info.kfgodel.komprension.impl.Komprenser
+import info.kfgodel.komprension.impl.UNCOMPRESSED_FUNCTION
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -20,18 +21,24 @@ class CompressionBasicCasesTest : KotlinSpec() {
     describe("a compressor") {
       val compressor by let { Komprenser().compressor() }
 
-      it("uses the empty array function type when an empty flow is passed") {
+      it("uses the empty function type when an empty flow is passed") {
         val input = emptyFlow<ByteArray>()
         val output = compressor().invoke(input);
-        assertThat(output.collectToByteArray()).containsExactly(EMPTY_ARRAY_FUNCTION)
+        assertThat(output.collectToByteArray()).containsExactly(EMPTY_FUNCTION)
       }
 
-      it("uses the empty array function type when a flow with no bytes is passed") {
+      it("uses the empty function type when a flow with no bytes is passed") {
         val input = flowOf(ByteArray(0))
         val output = compressor().invoke(input);
-        assertThat(output.collectToByteArray()).containsExactly(EMPTY_ARRAY_FUNCTION)
+        assertThat(output.collectToByteArray()).containsExactly(EMPTY_FUNCTION)
       }
 
+      it("uses the uncompressed function type when a flow of random bytes is passed") {
+        val input = flowOf(byteArrayOf(2, 6, 3, 10, 23, 110, 84, 91, -44, -43))
+        val output = compressor().invoke(input);
+        assertThat(output.collectToByteArray())
+          .containsExactly(UNCOMPRESSED_FUNCTION, 10 /*size*/, 2, 6, 3, 10, 23, 110, 84, 91, -44, -43)
+      }
     }
   }
 }
