@@ -2,6 +2,7 @@ package info.kfgodel.komprension.impl
 
 import info.kfgodel.komprension.api.Compressor
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.fold
 
@@ -12,19 +13,34 @@ import kotlinx.coroutines.flow.fold
 class DefaultCompressor: Compressor {
   override fun invoke(input: Flow<ByteArray>): Flow<ByteArray> {
     return flow {
-      // Dumb impl that accumulates all bytes
+      // Dumb impl that accumulates all bytes, decides output later
       val receivedBytes: ByteArray = input
         .fold(ByteArray(0)){ previous, next -> previous + next }
 
-      // Decide output after all input is processed
-      if(receivedBytes.isEmpty()){
-        // No byte was received
-        emit(byteArrayOf(EMPTY_FUNCTION))
-      }else{
-        // Return a single array with everything to allow assumptions on tests
-        val header = byteArrayOf(UNCOMPRESSED_FUNCTION, receivedBytes.size.toByte())
-        emit(header + receivedBytes)
+      when {
+        receivedBytes.isEmpty() -> emit(byteArrayOf(EMPTY_FUNCTION)) // No byte was received
+        repeatsSameNumber(receivedBytes) -> processConstant(receivedBytes)
+        else -> processUncompressed(receivedBytes)
       }
     }
   }
+
+
+  private suspend fun FlowCollector<ByteArray>.processUncompressed(receivedBytes: ByteArray) {
+    val header = byteArrayOf(UNCOMPRESSED_FUNCTION, receivedBytes.size.toByte())
+    emit(header + receivedBytes)
+  }
+
+  private fun repeatsSameNumber(receivedBytes: ByteArray): Boolean {
+    val firstByte = receivedBytes[0]
+    return receivedBytes.all { byte -> byte == firstByte }
+  }
+
+  private suspend fun FlowCollector<ByteArray>.processConstant(receivedBytes: ByteArray) {
+    val constantValue = receivedBytes[0]
+    val count = receivedBytes.size.toByte()
+    val parameterizedFunction = byteArrayOf(CONSTANT_FUNCTION, count, constantValue)
+    emit(parameterizedFunction)
+  }
 }
+
