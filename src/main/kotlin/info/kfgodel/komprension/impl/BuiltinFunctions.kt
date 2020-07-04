@@ -6,3 +6,4 @@ package info.kfgodel.komprension.impl
  */
 const val EMPTY_FUNCTION:Byte = -1
 const val UNCOMPRESSED_FUNCTION:Byte = -2
+const val CONSTANT_FUNCTION:Byte = 0
