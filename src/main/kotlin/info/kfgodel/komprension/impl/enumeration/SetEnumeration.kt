@@ -11,12 +11,8 @@ import java.nio.ByteBuffer
 interface SetEnumeration {
 
   /**
-   * Updates the parameters of the underlying function so it can reproduce the elements of the set as bytes
+   * Generates a buffer with the elements of the set enumerated as bytes, taking the input as parameters
+   * for the function to enumerate.<br>
    */
-  fun updateWith(input: ByteBuffer)
-
-  /**
-   * Generates a buffer with the elements of the set enumerated as bytes
-   */
-  fun enumerate() : ByteBuffer
+  fun enumerate(input: ByteBuffer) : ByteBuffer
 }
