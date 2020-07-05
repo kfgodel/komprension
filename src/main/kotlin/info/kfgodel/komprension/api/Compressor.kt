@@ -1,6 +1,7 @@
 package info.kfgodel.komprension.api
 
 import kotlinx.coroutines.flow.Flow
+import java.nio.ByteBuffer
 
 /**
  * This interface defines the minimum contract a compressor requires to be used in Komprension.<br>
@@ -8,5 +9,5 @@ import kotlinx.coroutines.flow.Flow
  *
  * Date: 27/6/20 - 16:23
  */
-interface Compressor : (Flow<ByteArray>) -> Flow<ByteArray>  {
+interface Compressor : (Flow<ByteBuffer>) -> Flow<ByteBuffer>  {
 }
