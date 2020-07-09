@@ -11,7 +11,7 @@ class BufferedMemory : WorkingMemory {
   private var buffer:ByteBuffer = ByteBuffer.allocate(0) //Start empty
 
   override fun include(inputChunk: ByteBuffer) {
-    buffer += inputChunk //TODO: put a limit on the size
+    buffer += inputChunk
   }
 
   override fun getInput(): ByteBuffer {

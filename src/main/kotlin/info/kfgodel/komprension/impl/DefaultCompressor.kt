@@ -24,7 +24,7 @@ class DefaultCompressor: Compressor {
   override fun invoke(input: Flow<ByteBuffer>): Flow<ByteBuffer> {
     return flow {
       val workingMemory = BufferedMemory()
-      // Half-there. Use memory to accummulate all input. TODO: work as chunks arrive
+      // Half-there. Use memory to accummulate all input
       input.onEach { inputChunk ->
         workingMemory.include(inputChunk)
       }.collect()
