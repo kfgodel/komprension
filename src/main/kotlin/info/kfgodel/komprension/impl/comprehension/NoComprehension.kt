@@ -1,6 +1,7 @@
 package info.kfgodel.komprension.impl.comprehension
 
 import info.kfgodel.komprension.impl.UNCOMPRESSED_FUNCTION
+import info.kfgodel.komprension.impl.memory.WorkingMemory
 import java.nio.ByteBuffer
 
 /**
@@ -9,18 +10,10 @@ import java.nio.ByteBuffer
  *
  * Date: 5/7/20 - 16:18
  */
-class NoComprehension : SetComprehension {
-  private var input: ByteBuffer? = null
-
-  override fun updateWith(input: ByteBuffer) {
-    this.input = input
-  }
+class NoComprehension(private val memory: WorkingMemory) : ComprehensionHeuristic {
 
   override fun comprehend(): ByteBuffer? {
-    if(input == null){
-      return null
-    }
-    val receivedBytes = input!!
+    val receivedBytes =memory.getInput()
     val buffer = ByteBuffer.allocate(2 + receivedBytes.remaining())
     buffer.put(UNCOMPRESSED_FUNCTION)
     buffer.put(receivedBytes.remaining().toByte())

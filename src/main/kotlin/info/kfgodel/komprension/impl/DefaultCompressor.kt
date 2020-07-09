@@ -1,16 +1,17 @@
 package info.kfgodel.komprension.impl
 
 import info.kfgodel.komprension.api.Compressor
-import info.kfgodel.komprension.ext.emptyBuffer
-import info.kfgodel.komprension.ext.plus
-import info.kfgodel.komprension.impl.comprehension.ConstantComprehension
-import info.kfgodel.komprension.impl.comprehension.EmptyComprehension
+import info.kfgodel.komprension.impl.comprehension.ComprehensionHeuristic
+import info.kfgodel.komprension.impl.comprehension.ConstantValueComprehension
 import info.kfgodel.komprension.impl.comprehension.NoComprehension
-import info.kfgodel.komprension.impl.comprehension.SetComprehension
+import info.kfgodel.komprension.impl.comprehension.NoInputComprehension
+import info.kfgodel.komprension.impl.memory.BufferedMemory
+import info.kfgodel.komprension.impl.memory.WorkingMemory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.flow.onEach
 import java.nio.ByteBuffer
 
 /**
@@ -22,12 +23,13 @@ class DefaultCompressor: Compressor {
   @ExperimentalCoroutinesApi
   override fun invoke(input: Flow<ByteBuffer>): Flow<ByteBuffer> {
     return flow {
-      // Dumb impl that accumulates all bytes, decides output later
-      val receivedBytes: ByteBuffer = input
-        .fold(emptyBuffer()){ previous, next -> previous + next }
+      val workingMemory = BufferedMemory()
+      // Half-there. Use memory to accummulate all input. TODO: work as chunks arrive
+      input.onEach { inputChunk ->
+        workingMemory.include(inputChunk)
+      }.collect()
 
-      val smallestComprehension = getAvailableComprehensions()
-        .onEach { comp -> comp.updateWith(receivedBytes.slice()) }
+      val smallestComprehension = getAvailableHeuristics(workingMemory)
         .map { comp -> comp.comprehend() }
         .filterNotNull()
         .reduce { aResult, otherResult -> if (aResult.remaining() < otherResult.remaining()) aResult else otherResult }
@@ -35,8 +37,12 @@ class DefaultCompressor: Compressor {
     }
   }
 
-  private fun getAvailableComprehensions(): Sequence<SetComprehension> {
-    return sequenceOf(EmptyComprehension(), ConstantComprehension(), NoComprehension())
+  private fun getAvailableHeuristics(workingMemory: WorkingMemory): Sequence<ComprehensionHeuristic> {
+    return sequenceOf(
+      NoInputComprehension(workingMemory),
+      ConstantValueComprehension(workingMemory),
+      NoComprehension(workingMemory)
+    )
   }
 
 }

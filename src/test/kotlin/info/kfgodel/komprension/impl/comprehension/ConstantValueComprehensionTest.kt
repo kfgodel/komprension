@@ -17,12 +17,12 @@ import org.junit.runner.RunWith
  */
 @ExperimentalCoroutinesApi
 @RunWith(JavaSpecRunner::class)
-class ConstantComprehensionTest : KotlinSpec() {
+class ConstantValueComprehensionTest : KotlinSpec() {
   override fun define() {
-    describe("a constant comprehension") {
+    describe("a constant value comprehension") {
       val compressor by let { Komprenser().compressor() }
 
-      it("can accept continuous input chunks") {
+      it("joins input chunk with same constant value") {
         val input = flowOf(byteBufferOf(5,5,5,5,5), byteBufferOf(5,5,5,5,5))
         val output = compressor().invoke(input)
         Assertions.assertThat(output.collectToByteArray())
