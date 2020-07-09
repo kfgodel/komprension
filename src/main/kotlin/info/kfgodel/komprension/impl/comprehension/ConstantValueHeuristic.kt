@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
  *
  * Date: 5/7/20 - 16:30
  */
-class ConstantValueComprehension(private val memory: WorkingMemory) : ComprehensionHeuristic {
+class ConstantValueHeuristic(private val memory: WorkingMemory) : ComprehensionHeuristic {
 
   private var constantValue: Byte? = null
   private var repetitionCount: Byte = 0

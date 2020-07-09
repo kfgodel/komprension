@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
  *
  * Date: 5/7/20 - 16:18
  */
-class NoComprehension(private val memory: WorkingMemory) : ComprehensionHeuristic {
+class NoComprehensionHeuristic(private val memory: WorkingMemory) : ComprehensionHeuristic {
 
   override fun comprehend(): ByteBuffer? {
     val receivedBytes =memory.getInput()

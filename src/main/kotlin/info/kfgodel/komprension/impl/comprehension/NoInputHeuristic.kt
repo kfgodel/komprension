@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
  * This type represents the comprehension that can describe the empty set
  * Date: 5/7/20 - 16:14
  */
-class NoInputComprehension(private val memory: WorkingMemory) : ComprehensionHeuristic {
+class NoInputHeuristic(private val memory: WorkingMemory) : ComprehensionHeuristic {
 
   private var buffer: ByteBuffer? = byteBufferOf(EMPTY_FUNCTION)
 

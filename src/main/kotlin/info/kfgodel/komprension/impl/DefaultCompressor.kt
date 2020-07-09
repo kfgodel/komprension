@@ -2,9 +2,9 @@ package info.kfgodel.komprension.impl
 
 import info.kfgodel.komprension.api.Compressor
 import info.kfgodel.komprension.impl.comprehension.ComprehensionHeuristic
-import info.kfgodel.komprension.impl.comprehension.ConstantValueComprehension
-import info.kfgodel.komprension.impl.comprehension.NoComprehension
-import info.kfgodel.komprension.impl.comprehension.NoInputComprehension
+import info.kfgodel.komprension.impl.comprehension.ConstantValueHeuristic
+import info.kfgodel.komprension.impl.comprehension.NoComprehensionHeuristic
+import info.kfgodel.komprension.impl.comprehension.NoInputHeuristic
 import info.kfgodel.komprension.impl.memory.BufferedMemory
 import info.kfgodel.komprension.impl.memory.WorkingMemory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -39,9 +39,9 @@ class DefaultCompressor: Compressor {
 
   private fun getAvailableHeuristics(workingMemory: WorkingMemory): Sequence<ComprehensionHeuristic> {
     return sequenceOf(
-      NoInputComprehension(workingMemory),
-      ConstantValueComprehension(workingMemory),
-      NoComprehension(workingMemory)
+      NoInputHeuristic(workingMemory),
+      ConstantValueHeuristic(workingMemory),
+      NoComprehensionHeuristic(workingMemory)
     )
   }
 

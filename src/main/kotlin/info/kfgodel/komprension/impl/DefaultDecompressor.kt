@@ -1,15 +1,15 @@
 package info.kfgodel.komprension.impl
 
 import info.kfgodel.komprension.api.Decompressor
-import info.kfgodel.komprension.ext.emptyBuffer
-import info.kfgodel.komprension.ext.plus
-import info.kfgodel.komprension.impl.enumeration.ConstantEnumeration
-import info.kfgodel.komprension.impl.enumeration.EmptyEnumeration
-import info.kfgodel.komprension.impl.enumeration.MemoryEnumeration
+import info.kfgodel.komprension.impl.enumeration.ConstantValueStrategy
+import info.kfgodel.komprension.impl.enumeration.MemoryChunkStrategy
+import info.kfgodel.komprension.impl.enumeration.NoOutputStrategy
+import info.kfgodel.komprension.impl.memory.BufferedMemory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.flow.onEach
 import java.nio.ByteBuffer
 
 /**
@@ -20,15 +20,17 @@ class DefaultDecompressor : Decompressor  {
   @ExperimentalCoroutinesApi
   override fun invoke(input: Flow<ByteBuffer>): Flow<ByteBuffer> {
     return flow {
-      // Again, dumb accumulation of everything without knowing its size beforehand
-      val receivedBytes = input
-        .fold(emptyBuffer()) { previous, next -> previous + next }
+      val workingMemory = BufferedMemory()
+      // Half-there. Use memory to accummulate all input
+      input.onEach { inputChunk ->
+        workingMemory.include(inputChunk)
+      }.collect()
 
-      val functionType = receivedBytes[0]
+      val functionType = workingMemory.getInput()[0]
       val output:ByteBuffer = when (functionType) {
-        EMPTY_FUNCTION -> EmptyEnumeration().enumerate(receivedBytes)
-        CONSTANT_FUNCTION -> ConstantEnumeration().enumerate(receivedBytes)
-        UNCOMPRESSED_FUNCTION -> MemoryEnumeration().enumerate(receivedBytes)
+        EMPTY_FUNCTION -> NoOutputStrategy().enumerate()
+        CONSTANT_FUNCTION -> ConstantValueStrategy(workingMemory).enumerate()
+        UNCOMPRESSED_FUNCTION -> MemoryChunkStrategy(workingMemory).enumerate()
         else -> throw IllegalArgumentException("Unknown function type: $functionType")
       }
       if(output.hasRemaining()){
