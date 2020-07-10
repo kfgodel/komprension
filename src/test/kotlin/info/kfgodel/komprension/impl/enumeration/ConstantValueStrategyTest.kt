@@ -17,15 +17,21 @@ import org.junit.runner.RunWith
  */
 @ExperimentalCoroutinesApi
 @RunWith(JavaSpecRunner::class)
-class ConstantEnumerationTest : KotlinSpec() {
+class ConstantValueStrategyTest : KotlinSpec() {
   override fun define() {
-    describe("a constant enumeration") {
+    describe("a constant value strategy") {
       val decompressor by let { Komprenser().decompressor() }
 
       it("can handle a header split into different input chunks") {
         val input = flowOf(byteBufferOf(CONSTANT_FUNCTION, 10 /*count*/), byteBufferOf(5))
         val output = decompressor().invoke(input)
         Assertions.assertThat(output.collectToByteArray()).containsExactly(5, 5, 5, 5, 5,  5, 5, 5, 5, 5)
+      }
+
+      it("generates an output chunk for each occurrence") {
+        val input = flowOf(byteBufferOf(CONSTANT_FUNCTION, 4, 5, CONSTANT_FUNCTION, 4, 6))
+        val output = decompressor().invoke(input)
+        Assertions.assertThat(output.collectToByteArray()).containsExactly(5, 5, 5, 5, 6, 6, 6, 6)
       }
     }
   }

@@ -14,7 +14,7 @@ class NoInputHeuristic(private val memory: WorkingMemory) : ComprehensionHeurist
   private var buffer: ByteBuffer? = byteBufferOf(EMPTY_FUNCTION)
 
   override fun comprehend(): ByteBuffer? {
-    if(memory.getInput().remaining() > 0){
+    if(memory.inputData().remaining() > 0){
       // Is not empty, cannot represent input
       return null
     }

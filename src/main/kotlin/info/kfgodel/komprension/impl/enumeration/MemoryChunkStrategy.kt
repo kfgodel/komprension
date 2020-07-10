@@ -10,9 +10,14 @@ import java.nio.ByteBuffer
 class MemoryChunkStrategy(private val memory: WorkingMemory) : EnumerationStrategy {
 
   override fun enumerate(): ByteBuffer {
-    val input = memory.getInput()
-    // First byte is the function type, and second the size which we ignore for now
-    input.position(2)
-    return input // Reuse the buffer
+    val input = memory.inputData()
+    // First parameter is size, which we ignore for now
+    val chunkSize = input.get()
+    // Create a view buffer limited to the declared size
+    val originalData = input.slice()
+    originalData.limit(chunkSize.toInt())
+    // Consume the bytes from input buffer
+    input.position(input.position() + chunkSize.toInt())
+    return originalData //
   }
 }

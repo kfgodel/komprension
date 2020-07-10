@@ -26,15 +26,17 @@ class DefaultDecompressor : Decompressor  {
         workingMemory.include(inputChunk)
       }.collect()
 
-      val functionType = workingMemory.getInput()[0]
-      val output:ByteBuffer = when (functionType) {
-        EMPTY_FUNCTION -> NoOutputStrategy().enumerate()
-        CONSTANT_FUNCTION -> ConstantValueStrategy(workingMemory).enumerate()
-        UNCOMPRESSED_FUNCTION -> MemoryChunkStrategy(workingMemory).enumerate()
-        else -> throw IllegalArgumentException("Unknown function type: $functionType")
-      }
-      if(output.hasRemaining()){
-        emit(output)
+      while(workingMemory.inputData().hasRemaining()){
+        val functionType = workingMemory.inputData().get() // Consume first available byte
+        val output:ByteBuffer = when (functionType) {
+          EMPTY_FUNCTION -> NoOutputStrategy().enumerate()
+          CONSTANT_FUNCTION -> ConstantValueStrategy(workingMemory).enumerate()
+          UNCOMPRESSED_FUNCTION -> MemoryChunkStrategy(workingMemory).enumerate()
+          else -> throw IllegalArgumentException("Unknown function type: $functionType")
+        }
+        if(output.hasRemaining()){
+          emit(output)
+        }
       }
     }
   }

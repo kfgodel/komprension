@@ -10,11 +10,12 @@ import java.nio.ByteBuffer
 class ConstantValueStrategy(private val memory: WorkingMemory) : EnumerationStrategy {
 
   override fun enumerate(): ByteBuffer {
-    val input = memory.getInput()
-    // First byte is function type, second is the repetition count
-    val byteCount = input[1].toInt()
+    val input = memory.inputData()
+    // First parameter is repetition count
+    val byteCount = input.get().toInt()
     val buffer = ByteBuffer.allocate(byteCount)
-    val constantValue = input[2]
+    // 2nd parameter is the value
+    val constantValue = input.get()
     for (i in 1..byteCount) {
       buffer.put(constantValue)
     }

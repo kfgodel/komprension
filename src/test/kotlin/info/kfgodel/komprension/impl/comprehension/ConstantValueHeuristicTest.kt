@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 @RunWith(JavaSpecRunner::class)
 class ConstantValueHeuristicTest : KotlinSpec() {
   override fun define() {
-    describe("a constant value comprehension") {
+    describe("a constant value heuristic") {
       val compressor by let { Komprenser().compressor() }
 
       it("joins input chunk with same constant value") {

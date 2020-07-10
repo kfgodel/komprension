@@ -19,7 +19,7 @@ import org.junit.runner.RunWith
 @RunWith(JavaSpecRunner::class)
 class NoComprehensionHeuristicTest : KotlinSpec() {
   override fun define() {
-    describe("a no comprehension") {
+    describe("a no comprehension heuristic") {
       val compressor by let { Komprenser().compressor() }
 
       it("joins input chunks into a single output chunk") {

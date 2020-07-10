@@ -19,5 +19,5 @@ interface WorkingMemory {
   /**
    * Returns all the received input as a single buffer
    */
-  fun getInput(): ByteBuffer
+  fun inputData(): ByteBuffer
 }

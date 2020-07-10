@@ -13,7 +13,7 @@ import java.nio.ByteBuffer
 class NoComprehensionHeuristic(private val memory: WorkingMemory) : ComprehensionHeuristic {
 
   override fun comprehend(): ByteBuffer? {
-    val receivedBytes =memory.getInput()
+    val receivedBytes =memory.inputData()
     val buffer = ByteBuffer.allocate(2 + receivedBytes.remaining())
     buffer.put(UNCOMPRESSED_FUNCTION)
     buffer.put(receivedBytes.remaining().toByte())

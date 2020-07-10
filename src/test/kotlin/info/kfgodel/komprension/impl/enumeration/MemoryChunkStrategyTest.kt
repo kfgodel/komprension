@@ -17,15 +17,21 @@ import org.junit.runner.RunWith
  */
 @ExperimentalCoroutinesApi
 @RunWith(JavaSpecRunner::class)
-class MemoryEnumerationTest : KotlinSpec() {
+class MemoryChunkStrategyTest : KotlinSpec() {
   override fun define() {
-    describe("a memory enumeration") {
+    describe("a memory chunk strategy") {
       val decompressor by let { Komprenser().decompressor() }
 
       it("joins its input chunks into a single output chunk") {
         val input = flowOf(byteBufferOf(UNCOMPRESSED_FUNCTION, 10 /*size*/, 2, 6, 3), byteBufferOf(10, 23, 110, 84, 91, -44, -43))
         val output = decompressor().invoke(input)
         Assertions.assertThat(output.collectToByteArray()).containsExactly(2, 6, 3, 10, 23, 110, 84, 91, -44, -43)
+      }
+
+      it("generates an output chunk for each occurrence") {
+        val input = flowOf(byteBufferOf(UNCOMPRESSED_FUNCTION, 3, 1, 2, 3, UNCOMPRESSED_FUNCTION, 3, 4, 5, 6))
+        val output = decompressor().invoke(input)
+        Assertions.assertThat(output.collectToByteArray()).containsExactly(1, 2, 3, 4, 5, 6)
       }
     }
   }

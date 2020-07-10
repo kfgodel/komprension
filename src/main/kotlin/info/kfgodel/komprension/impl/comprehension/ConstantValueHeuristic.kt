@@ -16,7 +16,7 @@ class ConstantValueHeuristic(private val memory: WorkingMemory) : ComprehensionH
   private var repetitionCount: Byte = 0
 
   override fun comprehend(): ByteBuffer? {
-    val input = memory.getInput()
+    val input = memory.inputData()
     if(!input.hasRemaining()){
       return null // No input to take a constant from
     }

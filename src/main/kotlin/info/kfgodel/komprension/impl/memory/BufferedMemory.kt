@@ -14,7 +14,7 @@ class BufferedMemory : WorkingMemory {
     buffer += inputChunk
   }
 
-  override fun getInput(): ByteBuffer {
+  override fun inputData(): ByteBuffer {
     return buffer
   }
 
