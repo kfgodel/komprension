@@ -28,6 +28,13 @@ class ConstantValueHeuristicTest : KotlinSpec() {
         Assertions.assertThat(output.collectToByteArray())
           .containsExactly(CONSTANT_FUNCTION, 10 /*count*/, 5)
       }
+
+      it("splits each occurrence as separate chunks") {
+        val input = flowOf(byteBufferOf(3,3,3,3,3), byteBufferOf(6,6,6,6,6))
+        val output = compressor().invoke(input)
+        Assertions.assertThat(output.collectToByteArray())
+          .containsExactly(CONSTANT_FUNCTION, 5 , 3, CONSTANT_FUNCTION, 5 , 6)
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 package info.kfgodel.komprension.impl.enumeration
 
+import info.kfgodel.komprension.ext.forward
 import info.kfgodel.komprension.impl.memory.WorkingMemory
 import java.nio.ByteBuffer
 
@@ -17,7 +18,7 @@ class MemoryChunkStrategy(private val memory: WorkingMemory) : EnumerationStrate
     val originalData = input.slice()
     originalData.limit(chunkSize.toInt())
     // Consume the bytes from input buffer
-    input.position(input.position() + chunkSize.toInt())
+    input.forward(chunkSize.toInt())
     return originalData //
   }
 }

@@ -1,6 +1,7 @@
 package info.kfgodel.komprension.impl
 
 import info.kfgodel.komprension.api.Compressor
+import info.kfgodel.komprension.ext.forward
 import info.kfgodel.komprension.impl.comprehension.ComprehensionHeuristic
 import info.kfgodel.komprension.impl.comprehension.ConstantValueHeuristic
 import info.kfgodel.komprension.impl.comprehension.NoComprehensionHeuristic
@@ -29,11 +30,15 @@ class DefaultCompressor: Compressor {
         workingMemory.include(inputChunk)
       }.collect()
 
-      val smallestComprehension = getAvailableHeuristics(workingMemory)
-        .map { comp -> comp.comprehend() }
-        .filterNotNull()
-        .reduce { aResult, otherResult -> if (aResult.remaining() < otherResult.remaining()) aResult else otherResult }
-      emit(smallestComprehension)
+      do {
+        val smallestRepresentation = getAvailableHeuristics(workingMemory)
+          .map { comp -> comp.comprehend() }
+          .filterNotNull()
+          .reduce { aRep, otherRep -> if (aRep.outputSize() < otherRep.outputSize()) aRep else otherRep }
+        emit(smallestRepresentation.outputData())
+        workingMemory.inputData().forward(smallestRepresentation.inputSize())
+      } while(workingMemory.inputData().hasRemaining())
+
     }
   }
 

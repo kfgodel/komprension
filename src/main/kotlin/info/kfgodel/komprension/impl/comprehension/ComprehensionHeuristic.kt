@@ -1,7 +1,5 @@
 package info.kfgodel.komprension.impl.comprehension
 
-import java.nio.ByteBuffer
-
 /**
  * This type represents an ongoing approach to represent input data as a set described with less bytes than received.<br>
  * The heuristic analyses input data trying to express it as a particular known function with defined parameters.<br>
@@ -19,5 +17,5 @@ interface ComprehensionHeuristic{
    * Tries to generate a buffer representation of the underlying function and its parameters (if possible).
    * If not, it returns null
    */
-  fun comprehend() : ByteBuffer?
+  fun comprehend() : ByteRepresentation?
 }

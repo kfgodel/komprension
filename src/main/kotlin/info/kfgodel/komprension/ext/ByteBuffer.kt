@@ -49,3 +49,18 @@ fun ByteBuffer.getByteArray(): ByteArray {
   this.get(extracted)
   return extracted
 }
+
+/**
+ * Moves the position forward (positively) as many steps as indicated
+ */
+fun ByteBuffer.forward(positions: Int) : ByteBuffer {
+  this.position(this.position() + positions)
+  return this
+}
+
+/**
+ * Gets the byte on the current position without changing it
+ */
+fun ByteBuffer.getByte() : Byte {
+  return this.get(this.position())
+}

@@ -1,9 +1,10 @@
 package info.kfgodel.komprension.impl.comprehension
 
 import info.kfgodel.komprension.ext.byteBufferOf
+import info.kfgodel.komprension.ext.forward
+import info.kfgodel.komprension.ext.getByte
 import info.kfgodel.komprension.impl.CONSTANT_FUNCTION
 import info.kfgodel.komprension.impl.memory.WorkingMemory
-import java.nio.ByteBuffer
 
 /**
  * This type represents the comprehension for input that can be represents by a constant function
@@ -12,28 +13,20 @@ import java.nio.ByteBuffer
  */
 class ConstantValueHeuristic(private val memory: WorkingMemory) : ComprehensionHeuristic {
 
-  private var constantValue: Byte? = null
-  private var repetitionCount: Byte = 0
-
-  override fun comprehend(): ByteBuffer? {
-    val input = memory.inputData()
-    if(!input.hasRemaining()){
+  override fun comprehend(): ByteRepresentation? {
+    if(!memory.inputData().hasRemaining()){
       return null // No input to take a constant from
     }
-    constantValue = input.get(input.position())
-    var comparedPosition = input.position() + 1
-    while(comparedPosition < input.limit()){
-      if(input[comparedPosition] != constantValue){
-        break
-      }
-      comparedPosition++
+    val input = memory.inputData().slice() // Create a view from current position
+    val constantValue = input.get()
+    while(input.hasRemaining() && (input.getByte() == constantValue)){
+      input.forward(1)
     }
-    // Did we find a different value before reaching the end?
-    if(comparedPosition < input.limit()){
-      return null
-    }else{
-      repetitionCount = comparedPosition.toByte()
+    val occurrences = input.position()
+    if(occurrences < 3){
+      return null // This heuristic can't produce a smaller representation
     }
-    return byteBufferOf(CONSTANT_FUNCTION, repetitionCount, constantValue!!)
+    val output = byteBufferOf(CONSTANT_FUNCTION, occurrences.toByte(), constantValue)
+    return BufferToBufferRepresentation(input, output)
   }
 }

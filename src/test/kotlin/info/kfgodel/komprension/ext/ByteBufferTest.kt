@@ -29,6 +29,17 @@ class ByteBufferTest : KotlinSpec() {
         assertThat(buffer().getByteArray()).isEqualTo(byteArrayOf(2, 3))
       }
 
+      it("allows moving the position forward by an amount of bytes") {
+        buffer().forward(2)
+        assertThat(buffer().position()).isEqualTo(2)
+      }
+
+      it("allows getting the byte without changing the current position") {
+        val currentByte = buffer().getByte()
+        assertThat(currentByte).isEqualTo(1)
+        assertThat(buffer().position()).isEqualTo(0)
+      }
+
     }
   }
 }
